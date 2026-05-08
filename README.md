@@ -17,10 +17,9 @@ Netlify Functions · Three.js (J3+) · Crossmint staging (J6+).
 ### Prérequis
 
 - Node.js ≥ 20
-- Rhino Compute lancé en local sur le port 6500
+- Rhino Compute lancé en local sur le port 5000
   (`C:\APP_US\compute.rhino3d` sur la machine de dev). La définition
   `grasshopper/test1.gh` doit être accessible par Compute.
-- Netlify CLI (`npm i -g netlify-cli`) — utilisé par `npm run dev`.
 
 ### Installation
 
@@ -36,20 +35,24 @@ cp .env.example .env
 npm run dev
 ```
 
-Ouvre `http://localhost:8888`. Le serveur Vite tourne sur 5173, mais c'est
-`netlify dev` qui orchestre Vite + Functions sur 8888 et applique les redirects
-de `netlify.toml`. Cliquer sur **Test** : la valeur d'entrée doit revenir
-doublée.
+Ouvre `http://localhost:5173`. Vite proxy `/api/solve/*` directement vers
+`RHINO_COMPUTE_URL` (lu depuis `.env`) en contournant les Functions Netlify
+en dev. Cliquer sur **Test** : la valeur d'entrée doit revenir doublée.
+
+> Variante avec Functions Netlify locales : `npm run dev:netlify` (nécessite
+> `npm i -g netlify-cli`, port 8888). Utile pour valider la Function avant
+> déploiement, mais plus lourd que le proxy Vite.
 
 ### Scripts
 
-| Commande            | Description                                         |
-| ------------------- | --------------------------------------------------- |
-| `npm run dev`       | `netlify dev` (Vite + Functions, redirects, env)    |
-| `npm run build`     | `tsc -b && vite build`                              |
-| `npm run preview`   | Preview du bundle de prod                           |
-| `npm run lint`      | ESLint avec `--max-warnings=0`                      |
-| `npm run typecheck` | `tsc --noEmit`                                      |
+| Commande              | Description                                         |
+| --------------------- | --------------------------------------------------- |
+| `npm run dev`         | Vite dev server (5173) avec proxy direct → Compute  |
+| `npm run dev:netlify` | `netlify dev` (Vite + Functions, port 8888)         |
+| `npm run build`       | `tsc -b && vite build`                              |
+| `npm run preview`     | Preview du bundle de prod                           |
+| `npm run lint`        | ESLint avec `--max-warnings=0`                      |
+| `npm run typecheck`   | `tsc --noEmit`                                      |
 
 ## Déploiement
 
